@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.smoothchecklist.data.ChecklistItem
 import com.example.smoothchecklist.databinding.ActivityMainBinding
 import com.example.smoothchecklist.ui.checklist.ChecklistAdapter
 import com.example.smoothchecklist.ui.checklist.ChecklistViewModel
@@ -24,14 +25,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            if (menuItem.itemId == com.example.smoothchecklist.R.id.action_done) {
-                viewModel.addItem()
-                true
-            } else {
-                false
-            }
+//        setSupportActionBar(binding.toolbar)
+//        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+//            if (menuItem.itemId == com.example.smoothchecklist.R.id.action_done) {
+//                viewModel.addItem()
+//                true
+//            } else {
+//                false
+//            }
+//        }
+
+        binding.ivTick.setOnClickListener {
+            viewModel.addItem()
         }
 
         val adapter = ChecklistAdapter(
@@ -46,7 +51,8 @@ class MainActivity : AppCompatActivity() {
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
         binding.checklistRecycler.setHasFixedSize(true)
-
+        val list = arrayListOf<ChecklistItem>(ChecklistItem(1L, false, "test one"))
+        adapter.submitList(list)
         viewModel.checklistItems.observe(this) { items ->
             adapter.submitList(items)
         }
@@ -56,5 +62,6 @@ class MainActivity : AppCompatActivity() {
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
     }
 }
