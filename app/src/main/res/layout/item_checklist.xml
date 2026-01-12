@@ -17,9 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
+        android:maxLines="5"
         android:hint="@string/item_hint"
         android:imeOptions="actionNext"
-        android:inputType="textCapSentences" />
+        android:inputType="textCapSentences|textMultiLine" />
 
     <ImageButton
         android:id="@+id/micButton"

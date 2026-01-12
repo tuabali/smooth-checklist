@@ -51,8 +51,6 @@ class MainActivity : AppCompatActivity() {
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
         binding.checklistRecycler.setHasFixedSize(true)
-        val list = arrayListOf<ChecklistItem>(ChecklistItem(1L, false, "test one"))
-        adapter.submitList(list)
         viewModel.checklistItems.observe(this) { items ->
             adapter.submitList(items)
         }
