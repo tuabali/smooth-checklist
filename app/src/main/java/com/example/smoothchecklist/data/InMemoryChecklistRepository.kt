@@ -17,15 +17,17 @@ class InMemoryChecklistRepository @Inject constructor() : ChecklistRepository {
         itemsLiveData.value = items.toList()
     }
 
-    override fun addItem() {
+    override fun addItem(): Long {
+        val newId = nextId++
         items.add(
             ChecklistItem(
-                id = nextId++,
+                id = newId,
                 isChecked = false,
                 text = ""
             )
         )
         itemsLiveData.value = items.toList()
+        return newId
     }
 
     override fun updateText(id: Long, text: String) {

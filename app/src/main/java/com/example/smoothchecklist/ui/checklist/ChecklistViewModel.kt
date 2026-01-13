@@ -13,8 +13,8 @@ class ChecklistViewModel @Inject constructor(
 ) : ViewModel() {
     val checklistItems: LiveData<List<ChecklistItem>> = repository.checklistItems
 
-    fun addItem() {
-        repository.addItem()
+    fun addItem(): Long {
+        return repository.addItem()
     }
 
     fun updateText(id: Long, text: String) {
