@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Smooth Checklist</string>
+    <string name="title_hint">Checklist title</string>
+    <string name="item_hint">Checklist item</string>
+    <string name="add_item">Add item</string>
+    <string name="mic">Record item</string>
+    <string name="delete">Delete item</string>
+    <string name="mic_permission_denied">Microphone permission denied</string>
+    <string name="mic_unavailable">Speech recognition not available</string>
+    <string name="mic_prompt">Speak now</string>
+</resources>
