@@ -16,6 +16,7 @@ class ChecklistAdapter(
     private val onMicClick: (Long) -> Unit,
     private val onDeleteClick: (Long) -> Unit
 ) : ListAdapter<ChecklistItem, ChecklistAdapter.ChecklistViewHolder>(DiffCallback) {
+    private var pendingFocusId: Long? = null
 
     init {
         setHasStableIds(true)
@@ -33,7 +34,16 @@ class ChecklistAdapter(
     }
 
     override fun onBindViewHolder(holder: ChecklistViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val item = getItem(position)
+        val shouldFocus = item.id == pendingFocusId
+        if (shouldFocus) {
+            pendingFocusId = null
+        }
+        holder.bind(item, shouldFocus)
+    }
+
+    fun requestFocusFor(id: Long) {
+        pendingFocusId = id
     }
 
     class ChecklistViewHolder(
@@ -75,7 +85,7 @@ class ChecklistAdapter(
             }
         }
 
-        fun bind(item: ChecklistItem) {
+        fun bind(item: ChecklistItem, shouldFocus: Boolean) {
             currentId = item.id
             if (binding.itemText.text?.toString() != item.text) {
                 binding.itemText.setText(item.text)
@@ -83,6 +93,15 @@ class ChecklistAdapter(
             }
             if (binding.itemCheckbox.isChecked != item.isChecked) {
                 binding.itemCheckbox.isChecked = item.isChecked
+            }
+            if (shouldFocus) {
+                binding.itemText.requestFocus()
+                binding.itemText.post {
+                    binding.itemText.setSelection(binding.itemText.text?.length ?: 0)
+                    val inputMethodManager =
+                        binding.itemText.context.getSystemService(android.view.inputmethod.InputMethodManager::class.java)
+                    inputMethodManager?.showSoftInput(binding.itemText, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+                }
             }
         }
     }

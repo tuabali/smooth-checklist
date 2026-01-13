@@ -8,11 +8,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.smoothchecklist.data.ChecklistItem
+import com.example.smoothchecklist.R
 import com.example.smoothchecklist.databinding.ActivityMainBinding
 import com.example.smoothchecklist.ui.checklist.ChecklistAdapter
 import com.example.smoothchecklist.ui.checklist.ChecklistViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.max
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         binding.ivTick.setOnClickListener {
-            viewModel.addItem()
+            val newId = viewModel.addItem()
+            adapter.requestFocusFor(newId)
         }
 
         val adapter = ChecklistAdapter(
@@ -55,9 +57,18 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(items)
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val contentPadding = resources.getDimensionPixelSize(R.dimen.screen_padding)
+            val bottomInset = max(systemBars.bottom, imeInsets.bottom)
+            binding.toolbar.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            binding.contentContainer.setPadding(
+                contentPadding + systemBars.left,
+                contentPadding,
+                contentPadding + systemBars.right,
+                contentPadding + bottomInset
+            )
             insets
         }
 
