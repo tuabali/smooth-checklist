@@ -7,12 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.smoothchecklist.R
 import com.example.smoothchecklist.databinding.ActivityMainBinding
 import com.example.smoothchecklist.ui.checklist.ChecklistAdapter
 import com.example.smoothchecklist.ui.checklist.ChecklistViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 @AndroidEntryPoint
@@ -26,29 +29,27 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        setSupportActionBar(binding.toolbar)
-//        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-//            if (menuItem.itemId == com.example.smoothchecklist.R.id.action_done) {
-//                viewModel.addItem()
-//                true
-//            } else {
-//                false
-//            }
-//        }
-
-        binding.ivTick.setOnClickListener {
-            val newId = viewModel.addItem()
-            adapter.requestFocusFor(newId)
-        }
-
         val adapter = ChecklistAdapter(
             onCheckedChange = { id, isChecked -> viewModel.toggleChecked(id, isChecked) },
             onTextChange = { id, text -> viewModel.updateText(id, text) },
             onMicClick = {
-                Toast.makeText(this, getString(com.example.smoothchecklist.R.string.mic_placeholder), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.mic_placeholder),
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             onDeleteClick = { id -> viewModel.deleteItem(id) }
         )
+
+        binding.ivTick.setOnClickListener {
+            val newId = viewModel.addItem()
+            adapter.requestFocusFor(newId)
+            lifecycleScope.launch {
+                delay(300)
+                binding.checklistRecycler.scrollToPosition(adapter.currentList.size - 1)
+            }
+        }
 
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
