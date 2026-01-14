@@ -55,15 +55,14 @@ class MainActivity : AppCompatActivity() {
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
         binding.checklistRecycler.setHasFixedSize(true)
+        binding.checklistRecycler.isFocusableInTouchMode = true
+        binding.checklistRecycler.setPreserveFocusAfterLayout(true)
         binding.checklistRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val focusedId = adapter.getFocusedItemId() ?: return
-                    val focusedHolder = recyclerView.findViewHolderForItemId(focusedId)
-                        ?: return
-                    focusedHolder.itemView.findViewById<android.widget.EditText>(
-                        com.example.smoothchecklist.R.id.itemText
-                    )?.requestFocus()
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val focusedId = adapter.getFocusedItemId() ?: return
+                val focusedHolder = recyclerView.findViewHolderForItemId(focusedId)
+                if (focusedHolder == null) {
+                    recyclerView.requestFocus()
                 }
             }
         })

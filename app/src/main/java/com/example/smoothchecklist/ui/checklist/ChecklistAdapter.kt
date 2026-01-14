@@ -63,6 +63,8 @@ class ChecklistAdapter(
     private fun onItemFocusChanged(id: Long, hasFocus: Boolean) {
         if (hasFocus) {
             focusedItemId = id
+        } else if (focusedItemId == id) {
+            pendingFocusId = id
         }
     }
 
