@@ -9,6 +9,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.smoothchecklist.R
 import com.example.smoothchecklist.databinding.ActivityMainBinding
 import com.example.smoothchecklist.ui.checklist.ChecklistAdapter
@@ -54,6 +55,23 @@ class MainActivity : AppCompatActivity() {
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
         binding.checklistRecycler.setHasFixedSize(true)
+        binding.checklistRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val focusedId = adapter.getFocusedItemId() ?: return
+                    val focusedHolder = recyclerView.findViewHolderForItemId(focusedId)
+                        ?: return
+                    focusedHolder.itemView.findViewById<android.widget.EditText>(
+                        com.example.smoothchecklist.R.id.itemText
+                    )?.requestFocus()
+                }
+            }
+        })
+        binding.titleInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                adapter.clearFocusedItem()
+            }
+        }
         viewModel.checklistItems.observe(this) { items ->
             adapter.submitList(items)
         }
