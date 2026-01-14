@@ -39,12 +39,13 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             },
-            onDeleteClick = { id -> viewModel.deleteItem(id) }
+            onDeleteClick = { id -> viewModel.deleteItem(id) },
+            onFocusChange = { id -> viewModel.updateFocus(id) }
         )
 
         binding.ivTick.setOnClickListener {
             val newId = viewModel.addItem()
-            adapter.requestFocusFor(newId)
+            viewModel.updateFocus(newId)
             lifecycleScope.launch {
                 delay(300)
                 binding.checklistRecycler.scrollToPosition(adapter.currentList.size - 1)
@@ -54,6 +55,24 @@ class MainActivity : AppCompatActivity() {
         binding.checklistRecycler.layoutManager = LinearLayoutManager(this)
         binding.checklistRecycler.adapter = adapter
         binding.checklistRecycler.setHasFixedSize(true)
+        binding.checklistRecycler.isFocusableInTouchMode = true
+        binding.checklistRecycler.setPreserveFocusAfterLayout(true)
+        binding.checklistRecycler.addOnChildAttachStateChangeListener(
+            object : androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener {
+                override fun onChildViewAttachedToWindow(view: android.view.View) = Unit
+
+                override fun onChildViewDetachedFromWindow(view: android.view.View) {
+                    if (view.hasFocus()) {
+                        binding.checklistRecycler.requestFocus()
+                    }
+                }
+            }
+        )
+        binding.titleInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                viewModel.updateFocus(null)
+            }
+        }
         viewModel.checklistItems.observe(this) { items ->
             adapter.submitList(items)
         }

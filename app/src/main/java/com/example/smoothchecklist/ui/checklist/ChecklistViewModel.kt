@@ -25,6 +25,10 @@ class ChecklistViewModel @Inject constructor(
         repository.toggleChecked(id, isChecked)
     }
 
+    fun updateFocus(id: Long?) {
+        repository.updateFocus(id)
+    }
+
     fun deleteItem(id: Long) {
         repository.deleteItem(id)
     }
