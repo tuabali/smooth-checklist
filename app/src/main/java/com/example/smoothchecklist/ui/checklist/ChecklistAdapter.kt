@@ -45,6 +45,20 @@ class ChecklistAdapter(
         holder.bind(item)
     }
 
+    fun clearFocusedItem() {
+        focusedItemId = null
+    }
+
+    fun getFocusedItemId(): Long? = focusedItemId
+
+    private fun onItemFocusChanged(id: Long, hasFocus: Boolean) {
+        if (hasFocus) {
+            focusedItemId = id
+        } else if (focusedItemId == id) {
+            pendingFocusId = id
+        }
+    }
+
     class ChecklistViewHolder(
         private val binding: ItemChecklistBinding,
         private val onCheckedChange: (Long, Boolean) -> Unit,

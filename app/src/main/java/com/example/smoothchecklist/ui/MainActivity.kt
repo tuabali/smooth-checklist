@@ -9,6 +9,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.smoothchecklist.R
 import com.example.smoothchecklist.databinding.ActivityMainBinding
 import com.example.smoothchecklist.ui.checklist.ChecklistAdapter
