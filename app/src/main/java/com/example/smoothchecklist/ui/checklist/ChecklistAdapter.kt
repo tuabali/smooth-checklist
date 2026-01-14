@@ -14,10 +14,9 @@ class ChecklistAdapter(
     private val onCheckedChange: (Long, Boolean) -> Unit,
     private val onTextChange: (Long, String) -> Unit,
     private val onMicClick: (Long) -> Unit,
-    private val onDeleteClick: (Long) -> Unit
+    private val onDeleteClick: (Long) -> Unit,
+    private val onFocusChange: (Long) -> Unit
 ) : ListAdapter<ChecklistItem, ChecklistAdapter.ChecklistViewHolder>(DiffCallback) {
-    private var pendingFocusId: Long? = null
-    private var focusedItemId: Long? = null
 
     init {
         setHasStableIds(true)
@@ -37,21 +36,13 @@ class ChecklistAdapter(
             onTextChange,
             onMicClick,
             onDeleteClick,
-            ::onItemFocusChanged
+            onFocusChange
         )
     }
 
     override fun onBindViewHolder(holder: ChecklistViewHolder, position: Int) {
         val item = getItem(position)
-        val shouldFocus = item.id == pendingFocusId || item.id == focusedItemId
-        if (shouldFocus) {
-            pendingFocusId = null
-        }
-        holder.bind(item, shouldFocus)
-    }
-
-    fun requestFocusFor(id: Long) {
-        pendingFocusId = id
+        holder.bind(item)
     }
 
     fun clearFocusedItem() {
@@ -74,7 +65,7 @@ class ChecklistAdapter(
         private val onTextChange: (Long, String) -> Unit,
         private val onMicClick: (Long) -> Unit,
         private val onDeleteClick: (Long) -> Unit,
-        private val onItemFocusChanged: (Long, Boolean) -> Unit
+        private val onFocusChange: (Long) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         private var currentId: Long = -1L
         private val textWatcher = object : TextWatcher {
@@ -92,8 +83,8 @@ class ChecklistAdapter(
         init {
             binding.itemText.addTextChangedListener(textWatcher)
             binding.itemText.setOnFocusChangeListener { _, hasFocus ->
-                if (currentId != -1L) {
-                    onItemFocusChanged(currentId, hasFocus)
+                if (hasFocus && currentId != -1L) {
+                    onFocusChange(currentId)
                 }
             }
             binding.itemCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -113,7 +104,7 @@ class ChecklistAdapter(
             }
         }
 
-        fun bind(item: ChecklistItem, shouldFocus: Boolean) {
+        fun bind(item: ChecklistItem) {
             currentId = item.id
             if (binding.itemText.text?.toString() != item.text) {
                 binding.itemText.setText(item.text)
@@ -122,7 +113,7 @@ class ChecklistAdapter(
             if (binding.itemCheckbox.isChecked != item.isChecked) {
                 binding.itemCheckbox.isChecked = item.isChecked
             }
-            if (shouldFocus) {
+            if (item.canFocus && !binding.itemText.isFocused) {
                 binding.itemText.requestFocus()
                 binding.itemText.post {
                     binding.itemText.setSelection(binding.itemText.text?.length ?: 0)
