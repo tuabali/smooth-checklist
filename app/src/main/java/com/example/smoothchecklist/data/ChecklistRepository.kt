@@ -8,5 +8,6 @@ interface ChecklistRepository {
     fun addItem(): Long
     fun updateText(id: Long, text: String)
     fun toggleChecked(id: Long, isChecked: Boolean)
+    fun updateFocus(id: Long?)
     fun deleteItem(id: Long)
 }

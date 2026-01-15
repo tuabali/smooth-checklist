@@ -46,6 +46,22 @@ class InMemoryChecklistRepository @Inject constructor() : ChecklistRepository {
         }
     }
 
+    override fun updateFocus(id: Long?) {
+        var changed = false
+        items.replaceAll { item ->
+            val shouldFocus = item.id == id
+            if (item.canFocus != shouldFocus) {
+                changed = true
+                item.copy(canFocus = shouldFocus)
+            } else {
+                item
+            }
+        }
+        if (changed) {
+            itemsLiveData.value = items.toList()
+        }
+    }
+
     override fun deleteItem(id: Long) {
         items.removeAll { it.id == id }
         itemsLiveData.value = items.toList()
